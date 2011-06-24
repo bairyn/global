@@ -41,6 +41,8 @@ library
     Data.Global
   default-extensions:
     TemplateHaskell
+  other-extensions:
+    FlexibleInstances
 
 source-repository head
   type:              darcs

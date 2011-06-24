@@ -1,7 +1,8 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, FlexibleInstances #-}
 
 module Data.Global
     ( UniqueDeclaration(..)
+    , UDEmpty(..)
     , UN
     , un
     , UT
@@ -12,6 +13,7 @@ module Data.Global
     , unsafeUDeclInternal
     ) where
 
+import Control.Concurrent.MVar
 import Data.IORef
 import Data.Tagged
 import Debug.Trace.LocationTH
@@ -117,6 +119,90 @@ instance UniqueDeclaration IORef where
             , PragmaD (InlineP name (InlineSpec False False Nothing))
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newIORef) uv) []
             ]
+
+-- | Declaring unique 'MVars'; preconditions are the same as those of 'IORef's.
+--
+-- The initial value is used so that the reference refers initially to that value.
+--
+-- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
+--
+-- In its low-level implementation, this instance uses 'unsafePerformIO';
+-- thus, the same preconditions apply to this instance, particularly those
+-- regarding top-level declarations (referential transparency cannot be
+-- violated here).  As of base-4.3.1.0, these conditions, that the user needs
+-- to be aware of, are the following:
+--  * Compile the declarations with the compiler flag -fno-cse.  This
+--    prevents multiple references from being substituted to refer to the
+--    same data.  This flag thus does not affect the semantics of the
+--    program, but may potentially adversely affect its performance; thus,
+--    isolating in a @.Global@ module may be advisable in some cases.  This
+--    condition is not strictly necessary when only one declaration is made
+--    in a module, since the compiler cannot substitute multiple references
+--    to refer to same data.
+--
+--    If your code behaves differently when optimizations are enabled,
+--    ensure that this flag is indeed being used when the declarations are being compiled.
+--    Setting or passing this flag is NOT handled automatically by this
+--    implementation; it is the responsibility of users of this
+--    implementation to ensure that such appropriate behaviour is set when
+--    necessary.
+--
+--    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
+--    the file in which the declarations are declared, before the "module"
+--    line.
+--  * 'unsafeUDeclInternal' needs to be in scope where unique declarations are declared.  It normally is when '=::' is in scope, as long as it is not hidden.
+instance UniqueDeclaration MVar where
+    (Tagged name) =:: (uvq, Tagged typq) = do
+        uv  <- uvq
+        typ <- typq
+        $(assert [| monomorphic typ |]) . return $
+            [ SigD name $ AppT (ConT ''MVar) typ
+            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newMVar) uv) []
+            ]
+
+-- | Declaring unique 'MVars' that are initially empty.
+--
+-- The initial value is ignored.
+--
+-- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
+--
+-- In its low-level implementation, this instance uses 'unsafePerformIO';
+-- thus, the same preconditions apply to this instance, particularly those
+-- regarding top-level declarations (referential transparency cannot be
+-- violated here).  As of base-4.3.1.0, these conditions, that the user needs
+-- to be aware of, are the following:
+--  * Compile the declarations with the compiler flag -fno-cse.  This
+--    prevents multiple references from being substituted to refer to the
+--    same data.  This flag thus does not affect the semantics of the
+--    program, but may potentially adversely affect its performance; thus,
+--    isolating in a @.Global@ module may be advisable in some cases.  This
+--    condition is not strictly necessary when only one declaration is made
+--    in a module, since the compiler cannot substitute multiple references
+--    to refer to same data.
+--
+--    If your code behaves differently when optimizations are enabled,
+--    ensure that this flag is indeed being used when the declarations are being compiled.
+--    Setting or passing this flag is NOT handled automatically by this
+--    implementation; it is the responsibility of users of this
+--    implementation to ensure that such appropriate behaviour is set when
+--    necessary.
+--
+--    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
+--    the file in which the declarations are declared, before the "module"
+--    line.
+--  * 'unsafeUDeclInternal' needs to be in scope where unique declarations are declared.  It normally is when '=::' is in scope, as long as it is not hidden.
+instance UniqueDeclaration (UDEmpty MVar) where
+    (Tagged name) =:: (_, Tagged typq) = do
+        typ <- typq
+        $(assert [| monomorphic typ |]) . return $
+            [ SigD name $ AppT (ConT ''MVar) typ
+            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'newEmptyMVar) []
+            ]
+
+-- | Identity type wrapper that indicates that the unique declaration should be "empty" by default.
+newtype UDEmpty u a = UDEmpty (u a)
 
 -- | Tagged name type.
 type UN u = Tagged (Cnt u) Name
