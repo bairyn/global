@@ -36,8 +36,13 @@ import Text.Printf
 --
 -- Like 'Monad', this type class itself is not magical.  Its instances, however, may be primitive, at least conceptually, much like IO's Monad instance.
 --
--- Individual instances may require certain compiler constructs* to be
--- invoked.  Each individual instances should include in its documentation what these are.  These ops may affect surrounding code, perhaps in ways detrimental* to the program's performance or eficiency; users should thus consider isolating "global" declarations in their own ".Global" module; this is not necessarily necessary for every instance.  (Again**, ) See the documentation of the particular to see how the declarations should be used.
+-- Individual instances may be accompanied with certain caveats.  Each
+-- individual instance should include in its documentation what these are.
+-- These caveats may affect surrounding code, perhaps in ways detrimental to
+-- the program's performance or efficiency; users should thus consider
+-- isolating "global" declarations in their own @.Global@ module; this is not
+-- necessarily necessary for every instance.  See the documentation of the
+-- particular instance to see how the declarations should be declared.
 --
 -- The type should be monomorphic, or concrete
 -- enough, to be type safe, so that the references
@@ -127,14 +132,14 @@ instance UniqueDeclaration IORef where
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newIORef) uv) []
             ]
 
--- | Declaring unique 'MVars'; preconditions are the same as those of 'IORef's.
+-- | Declaring unique 'MVar's; see also 'TMVar'; caveats are the same as those of 'IORef's.
 --
 -- The initial value is used so that the reference refers initially to that value.
 --
 -- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
 --
 -- In its low-level implementation, this instance uses 'unsafePerformIO';
--- thus, the same preconditions apply to this instance, particularly those
+-- thus, the same caveats apply to this instance, particularly those
 -- regarding top-level declarations (referential transparency cannot be
 -- violated here).  As of base-4.3.1.0, these conditions, that the user needs
 -- to be aware of, are the following:
@@ -168,14 +173,14 @@ instance UniqueDeclaration MVar where
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newMVar) uv) []
             ]
 
--- | Declaring unique 'MVars' that are initially empty.
+-- | Declaring unique 'MVar's that are initially empty; see also 'TMVar'.
 --
 -- The initial value is ignored.
 --
 -- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
 --
 -- In its low-level implementation, this instance uses 'unsafePerformIO';
--- thus, the same preconditions apply to this instance, particularly those
+-- thus, the same caveats apply to this instance, particularly those
 -- regarding top-level declarations (referential transparency cannot be
 -- violated here).  As of base-4.3.1.0, these conditions, that the user needs
 -- to be aware of, are the following:

@@ -9,7 +9,9 @@ author:              Byron James Johnson
 maintainer:          KrabbyKrap@gmail.com
 synopsis:            Haskell2010 compatible library enabling unique top-level declarations, including references to mutable state accessible via IO.
 description:
-  The "global" library enables the declaration of unique top-level references to state.  More generally, it enables the declaration of unique top-level declarations.
+  The "global" library enables the declaration of unique top-level references
+  to state.  More generally, it enables the declaration of unique top-level
+  declarations.
   .
   Conceptually, this library defines primitive means of unique declarations,
   whose internal implementation is hidden from users, and uses Template
@@ -28,15 +30,28 @@ description:
   @monad-operations@).  This library might be more appropriately used for
   other purposes, such as to provide a means to directly translate C to
   Haskell with a result whose style more closely resembles that of the
-  original code.
+  original code.  Users should also consider using the language feature
+  @ImplicitParams@.
+  .
+  Examples of small programs that use this library are provided in the
+  repository in which it resides.
+
 category:              Data, Language, System
 tested-with:           GHC == 7.0.2
 
 library
   default-language:  Haskell2010
   hs-source-dirs:    src
-  build-depends:     base >= 4 && < 5, template-haskell >= 2.4 && < 3, stm >= 2 && < 3, tagged >= 0 && < 1, loch-th >= 0.1 && < 1
   ghc-options:       -Wall
+  build-depends:
+    base                >= 4   && < 5
+   ,template-haskell    >= 2.4 && < 3
+   ,stm                 >= 2   && < 3
+   ,tagged              >= 0   && < 1
+   ,loch-th             >= 0.1 && < 1
+   ,haskell-src-exts-qq >= 0.3 && < 1
+   ,syntax-trees        >= 0.1 && < 1
+   ,haskell-src-exts    >= 1.9 && < 2
   exposed-modules:
     Data.Global
   default-extensions:
