@@ -11,13 +11,20 @@ module Data.Global
     , UV
     , monomorphic
     , unsafeUDeclInternal
+    , translateExtsToTH'
+    , utl
+    , ud
     ) where
 
 import Control.Concurrent.MVar
 import Data.IORef
 import Data.Tagged
 import Debug.Trace.LocationTH
+import qualified Language.Haskell.Exts.Syntax as Exts (Exp)
+import Language.Haskell.Exts.QQ
+import Language.Haskell.SyntaxTrees.ExtsToTH
 import Language.Haskell.TH
+import Language.Haskell.TH.Quote
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Printf
 
@@ -247,3 +254,25 @@ type UnsafeUDeclInternal u a = IO (u a) -> (u a)
 unsafeUDeclInternal :: (UniqueDeclaration u) => UnsafeUDeclInternal u a
 {-# NOINLINE unsafeUDeclInternal #-}
 unsafeUDeclInternal = unsafePerformIO
+
+-- | Translate an "Exts" AST to a Template Haskell AST, failing when the translation result is not a Template Haskell AST.
+--
+-- This is defined in terms of 'Language.Haskell.Exts.QQ.translateExtsToTH'
+translateExtsToTH' :: Exts.Exp -> Exp
+translateExtsToTH' = either (const $ $failure $ printf "translating Exts AST to Template Haskell AST resulted in Exts AST") id . translateExtsToTH
+
+-- | Apply translateExtsToTH' and lift the result into the 'Q' monad.
+--
+-- This is often used with 'ud' to refer to variables whose names are not required to be in scope when the quotation is expanded, in a very roundabout way.
+--
+-- "utl" can be thought of as a mnemonic for "unique", "translate" and "lift"; and will be updated appropriately to reflect changes to 'UV'.
+--
+-- For example, to enable self-referential recursion by referring to
+-- variables whose names are not yet in scope, an expression quotation
+-- @[| … |]@ can usually be written as @utl [ud| … |]@.
+utl :: Exts.Exp -> UV
+utl = return . translateExtsToTH'
+
+-- | Alias to the 'QuasiQuoter' 'hs', which does not require names to be in scope when the quotation is expanded, which enables self-referential recursion.
+ud :: QuasiQuoter
+ud = hs
