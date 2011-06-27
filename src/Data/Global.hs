@@ -3,9 +3,6 @@
 module Data.Global
     ( UniqueDeclaration(..)
     , UDEmpty(..)
-    , PseudoContainer(..)
-    , Const
-    , tConst
     , UN
     , un
     , UT
@@ -19,6 +16,7 @@ module Data.Global
     , ud
     ) where
 
+import Control.Applicative
 import Control.Concurrent.Chan
 import Control.Concurrent.MVar
 import Control.Concurrent.QSem
@@ -293,7 +291,7 @@ instance UniqueDeclaration (UDEmpty Chan) where
 --    the file in which the declarations are declared, before the "module"
 --    line.
 --  * 'unsafeUDeclInternal' needs to be in scope where unique declarations are declared.  It normally is when '=::' is in scope, as long as it is not hidden.
-instance UniqueDeclaration (PseudoContainer QSem) where
+instance UniqueDeclaration (Const QSem) where
     (Tagged name) =:: (uvq, _) = do
         uv  <- uvq
         return $
@@ -304,18 +302,6 @@ instance UniqueDeclaration (PseudoContainer QSem) where
 
 -- | Identity type wrapper that indicates that the unique declaration should be "empty" by default.
 newtype UDEmpty u a = UDEmpty (u a)
-
--- | Wrapper that serves as a type constructor that ignores the type it is given.
---
--- It can be thought of as a type-level 'const' and as a flipped version of 'Tagged'.
-newtype PseudoContainer t a = PseudoContainer t
-
--- | Alias to 'PseudoContainer'
-type Const = PseudoContainer
-
--- | Alias to 'PseudoContainer'
-tConst :: t -> PseudoContainer t a
-tConst = PseudoContainer
 
 -- | Tagged name type.
 type UN u = Tagged (Cnt u) Name
