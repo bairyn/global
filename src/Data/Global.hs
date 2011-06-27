@@ -10,7 +10,6 @@ module Data.Global
     , Cnt
     , UV
     , monomorphic
-    , unsafeUDeclInternal
     , translateExtsToTH'
     , utl
     , ud
