@@ -289,7 +289,7 @@ monomorphic (SigT _ _) = True
 monomorphic t          = $failure $ printf "type is too polymorphic: `%s'" (pprint t)
 
 -- | Type of 'unsafeUDeclInternal', used only by this library.
-type UnsafeUDeclInternal u a = IO (u a) -> (u a)
+type UnsafeUDeclInternal a = IO a -> a
 -- | Internal means of constructing unique values, used only by this library.
 --
 -- 'unsafeUDeclInternal' should never be used directly, outside this
@@ -297,7 +297,7 @@ type UnsafeUDeclInternal u a = IO (u a) -> (u a)
 -- 'UniqueDeclaration' to be in scope where a unique declaration is
 -- declared; when this is the case, the documentation of the instances should
 -- indicate this.
-unsafeUDeclInternal :: (UniqueDeclaration u) => UnsafeUDeclInternal u a
+unsafeUDeclInternal :: UnsafeUDeclInternal a
 {-# NOINLINE unsafeUDeclInternal #-}
 unsafeUDeclInternal = unsafePerformIO
 
