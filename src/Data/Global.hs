@@ -34,11 +34,9 @@ import Text.Printf
 
 -- | Types that can be uniquely declared on the top level.
 --
--- For each declaration, 'declare' must provide a definition and not a
--- definition for any other name, as well as not defining a type signature.
--- Additionally, .  Neither is enforced by the type system.
---
--- Like 'Monad', this type class itself is not magical.  Its instances, however, may be primitive, at least conceptually, much like IO's Monad instance.
+-- Like 'Monad', this type class itself is not "magical".  Its instances,
+-- however, may be primitive, at least conceptually, much like 'IO's 'Monad'
+-- instance.
 --
 -- Individual instances may be accompanied with certain caveats.  Each
 -- individual instance should include in its documentation what these are.
@@ -79,18 +77,17 @@ import Text.Printf
 -- @lives@ would then refer to the 'TVar' and would initially contain the value @3@.
 class UniqueDeclaration u where
     -- | Declare uniquely.
-    --
-    -- A type signature should not be provided by this function.  This
-    -- function is thus normally not used to directly declare a unique
-    -- reference; see '=::'.
     (=::) ::
         UN u         -- ^ Name of reference
-     -> (UV, UT u)   -- ^ Initial value, tagged with the unique constructor so that the correct instance can be unambiguously determined.
+     -> (UV, UT u)   -- ^ Initial value, accompanied with the internal type
+                     -- and tagged with the unique constructor so that the
+                     -- correct instance can be unambiguously determined.
                      --
                      -- An initial value may not make sense in some
                      -- contexts; implementations of instances may choose
-                     -- to ignore this value.  Implementations should
-                     -- document how this value is used.
+                     -- to ignore this value, as well as the internal type
+                     -- and unique constructor.  Implementations should
+                     -- document how this parameter is used.
      -> Q [Dec]      -- ^ Top-level declarations for the unique declaration.
                      --
                      -- At least a definition for the name and a type signature should be provided.
@@ -125,7 +122,6 @@ class UniqueDeclaration u where
 --    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
 --    the file in which the declarations are declared, before the "module"
 --    line.
---  * 'unsafeUDeclInternal' needs to be in scope where unique declarations are declared.  It normally is when '=::' is in scope, as long as it is not hidden.
 instance UniqueDeclaration IORef where
     (Tagged name) =:: (uvq, Tagged typq) = do
         uv  <- uvq
@@ -166,7 +162,6 @@ instance UniqueDeclaration IORef where
 --    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
 --    the file in which the declarations are declared, before the "module"
 --    line.
---  * 'unsafeUDeclInternal' needs to be in scope where unique declarations are declared.  It normally is when '=::' is in scope, as long as it is not hidden.
 instance UniqueDeclaration MVar where
     (Tagged name) =:: (uvq, Tagged typq) = do
         uv  <- uvq
@@ -207,7 +202,6 @@ instance UniqueDeclaration MVar where
 --    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
 --    the file in which the declarations are declared, before the "module"
 --    line.
---  * 'unsafeUDeclInternal' needs to be in scope where unique declarations are declared.  It normally is when '=::' is in scope, as long as it is not hidden.
 instance UniqueDeclaration (UDEmpty MVar) where
     (Tagged name) =:: (_, Tagged typq) = do
         typ <- typq
@@ -247,7 +241,6 @@ instance UniqueDeclaration (UDEmpty MVar) where
 --    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
 --    the file in which the declarations are declared, before the "module"
 --    line.
---  * 'unsafeUDeclInternal' needs to be in scope where unique declarations are declared.  It normally is when '=::' is in scope, as long as it is not hidden.
 instance UniqueDeclaration (UDEmpty Chan) where
     (Tagged name) =:: (_, Tagged typq) = do
         typ <- typq
@@ -291,7 +284,6 @@ instance UniqueDeclaration (UDEmpty Chan) where
 --    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
 --    the file in which the declarations are declared, before the "module"
 --    line.
---  * 'unsafeUDeclInternal' needs to be in scope where unique declarations are declared.  It normally is when '=::' is in scope, as long as it is not hidden.
 instance UniqueDeclaration (Const QSem) where
     (Tagged name) =:: (uvq, _) = do
         uv  <- uvq
@@ -344,10 +336,7 @@ type QSemQuantity = Int
 -- | Internal means of constructing unique values, used only by this library.
 --
 -- 'unsafeUDeclInternal' should never be used directly, outside this
--- library.  It may, however, be required by some instances of
--- 'UniqueDeclaration' to be in scope where a unique declaration is
--- declared; when this is the case, the documentation of the instances should
--- indicate this.
+-- library.
 unsafeUDeclInternal :: UnsafeUDeclInternal a
 {-# NOINLINE unsafeUDeclInternal #-}
 unsafeUDeclInternal = unsafePerformIO
