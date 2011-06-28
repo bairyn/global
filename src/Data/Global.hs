@@ -14,6 +14,7 @@ module Data.Global
     , translateExtsToTH'
     , utl
     , ud
+    , uninitialized
     ) where
 
 import Control.Applicative
@@ -372,3 +373,9 @@ utl = return . translateExtsToTH'
 -- | Alias to the 'QuasiQuoter' 'hs', which does not require names to be in scope when the quotation is expanded, which enables self-referential recursion.
 ud :: QuasiQuoter
 ud = hs
+
+-- | An alternative to providing an initial value.
+--
+-- Warning: attempting to read uninitialized references can cause the program to crash.
+uninitialized :: Q Exp
+uninitialized = [| $failure "uninitialized" |]
