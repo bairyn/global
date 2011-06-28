@@ -10,6 +10,7 @@ module Data.Global
     , Cnt
     , UV
     , monomorphic
+    , QSemQuantity
     , translateExtsToTH'
     , utl
     , ud
@@ -335,6 +336,10 @@ monomorphic t          = $failure $ printf "type is too polymorphic: `%s'" (ppri
 
 -- | Type of 'unsafeUDeclInternal', used only by this library.
 type UnsafeUDeclInternal a = IO a -> a
+
+-- | The type of values that supply an initial quantity for quantity semaphores.
+type QSemQuantity = Int
+
 -- | Internal means of constructing unique values, used only by this library.
 --
 -- 'unsafeUDeclInternal' should never be used directly, outside this
