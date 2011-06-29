@@ -77,7 +77,7 @@ import Text.Printf
 -- Example:
 --
 -- @
--- un "lives" =:: ([| 3 |], ut [t| Integer |] :: UT TVar)
+-- un \"lives\" =:: ([| 3 |], ut [t| Integer |] :: UT TVar)
 -- @
 --
 -- @lives@ would then refer to the 'TVar' and would initially contain the value @3@.
