@@ -19,6 +19,10 @@ module Data.Global
 
 import Control.Applicative
 import Control.Concurrent.Chan
+import Control.Concurrent.FairRWLock as FairRWLock
+import Control.Concurrent.MSampleVar as MSampleVar
+import Control.Concurrent.MSem as MSem
+import Control.Concurrent.MSemN as MSemN
 import Control.Concurrent.MVar
 import Control.Concurrent.QSem
 import Control.Concurrent.QSemN
@@ -414,7 +418,212 @@ instance UniqueDeclaration (UDEmpty SampleVar) where
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''SampleVar) typ
             , PragmaD (InlineP name (InlineSpec False False Nothing))
-            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'newSampleVar) []
+            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'newEmptySampleVar) []
+            ]
+
+-- | Declaring unique 'RWLock's.
+--
+-- The initial value and the internal type are ignored.
+--
+-- NB: When multiple units of a resource are needed simultaneously, consider using 'QSemN's to avoid deadlocks.
+--
+-- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
+--
+-- In its low-level implementation, this instance uses 'unsafePerformIO';
+-- thus, the same caveats apply to this instance, particularly those
+-- regarding top-level declarations (referential transparency cannot be
+-- violated here).  As of base-4.3.1.0, these conditions, that the user needs
+-- to be aware of, are the following:
+--  * Compile the declarations with the compiler flag -fno-cse.  This
+--    prevents multiple references from being substituted to refer to the
+--    same data.  This flag thus does not affect the semantics of the
+--    program, but may potentially adversely affect its performance; thus,
+--    isolating in a @.Global@ module may be advisable in some cases.  This
+--    condition is not strictly necessary when only one declaration is made
+--    in a module, since the compiler cannot substitute multiple references
+--    to refer to same data.
+--
+--    If your code behaves differently when optimizations are enabled,
+--    ensure that this flag is indeed being used when the declarations are being compiled.
+--    Setting or passing this flag is NOT handled automatically by this
+--    implementation; it is the responsibility of users of this
+--    implementation to ensure that such appropriate behaviour is set when
+--    necessary.
+--
+--    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
+--    the file in which the declarations are declared, before the "module"
+--    line.
+instance UniqueDeclaration (Const RWLock) where
+    (Tagged name) =:: (_, _) = do
+        return $
+            [ SigD name $ ConT ''RWLock
+            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'FairRWLock.new) []
+            ]
+
+-- | Declaring unique 'MSampleVar's; caveats are the same as those of 'IORef's.
+--
+-- The initial value is used so that the reference refers initially to that value.
+--
+-- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
+--
+-- In its low-level implementation, this instance uses 'unsafePerformIO';
+-- thus, the same caveats apply to this instance, particularly those
+-- regarding top-level declarations (referential transparency cannot be
+-- violated here).  As of base-4.3.1.0, these conditions, that the user needs
+-- to be aware of, are the following:
+--  * Compile the declarations with the compiler flag -fno-cse.  This
+--    prevents multiple references from being substituted to refer to the
+--    same data.  This flag thus does not affect the semantics of the
+--    program, but may potentially adversely affect its performance; thus,
+--    isolating in a @.Global@ module may be advisable in some cases.  This
+--    condition is not strictly necessary when only one declaration is made
+--    in a module, since the compiler cannot substitute multiple references
+--    to refer to same data.
+--
+--    If your code behaves differently when optimizations are enabled,
+--    ensure that this flag is indeed being used when the declarations are being compiled.
+--    Setting or passing this flag is NOT handled automatically by this
+--    implementation; it is the responsibility of users of this
+--    implementation to ensure that such appropriate behaviour is set when
+--    necessary.
+--
+--    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
+--    the file in which the declarations are declared, before the "module"
+--    line.
+instance UniqueDeclaration MSampleVar where
+    (Tagged name) =:: (uvq, Tagged typq) = do
+        uv  <- uvq
+        typ <- typq
+        $(assert [| monomorphic typ |]) . return $
+            [ SigD name $ AppT (ConT ''MSampleVar) typ
+            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'MSampleVar.newSV) uv) []
+            ]
+
+-- | Declaring unique 'MSampleVars's that are initially empty; caveats are the same as those of 'MVar's that are initially empty.
+--
+-- The initial value is ignored.
+--
+-- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
+--
+-- In its low-level implementation, this instance uses 'unsafePerformIO';
+-- thus, the same caveats apply to this instance, particularly those
+-- regarding top-level declarations (referential transparency cannot be
+-- violated here).  As of base-4.3.1.0, these conditions, that the user needs
+-- to be aware of, are the following:
+--  * Compile the declarations with the compiler flag -fno-cse.  This
+--    prevents multiple references from being substituted to refer to the
+--    same data.  This flag thus does not affect the semantics of the
+--    program, but may potentially adversely affect its performance; thus,
+--    isolating in a @.Global@ module may be advisable in some cases.  This
+--    condition is not strictly necessary when only one declaration is made
+--    in a module, since the compiler cannot substitute multiple references
+--    to refer to same data.
+--
+--    If your code behaves differently when optimizations are enabled,
+--    ensure that this flag is indeed being used when the declarations are being compiled.
+--    Setting or passing this flag is NOT handled automatically by this
+--    implementation; it is the responsibility of users of this
+--    implementation to ensure that such appropriate behaviour is set when
+--    necessary.
+--
+--    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
+--    the file in which the declarations are declared, before the "module"
+--    line.
+instance UniqueDeclaration (UDEmpty MSampleVar) where
+    (Tagged name) =:: (_, Tagged typq) = do
+        typ <- typq
+        $(assert [| monomorphic typ |]) . return $
+            [ SigD name $ AppT (ConT ''MSampleVar) typ
+            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'MSampleVar.newEmptySV) []
+            ]
+
+-- | Declaring unique 'MSem's.
+--
+-- The initial value; which is, in this case, determines the initial quantity
+-- of the semaphore; is passed to 'newMSem'; the types thus must match.  The
+-- internal type is ignored.
+--
+-- NB: When multiple units of a resource are needed simultaneously, consider using 'MSemN's to avoid deadlocks.
+--
+-- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
+--
+-- In its low-level implementation, this instance uses 'unsafePerformIO';
+-- thus, the same caveats apply to this instance, particularly those
+-- regarding top-level declarations (referential transparency cannot be
+-- violated here).  As of base-4.3.1.0, these conditions, that the user needs
+-- to be aware of, are the following:
+--  * Compile the declarations with the compiler flag -fno-cse.  This
+--    prevents multiple references from being substituted to refer to the
+--    same data.  This flag thus does not affect the semantics of the
+--    program, but may potentially adversely affect its performance; thus,
+--    isolating in a @.Global@ module may be advisable in some cases.  This
+--    condition is not strictly necessary when only one declaration is made
+--    in a module, since the compiler cannot substitute multiple references
+--    to refer to same data.
+--
+--    If your code behaves differently when optimizations are enabled,
+--    ensure that this flag is indeed being used when the declarations are being compiled.
+--    Setting or passing this flag is NOT handled automatically by this
+--    implementation; it is the responsibility of users of this
+--    implementation to ensure that such appropriate behaviour is set when
+--    necessary.
+--
+--    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
+--    the file in which the declarations are declared, before the "module"
+--    line.
+instance (Integral i) => UniqueDeclaration (Const (MSem i)) where
+    (Tagged name) =:: (uvq, _) = do
+        uv  <- uvq
+        return $
+            [ SigD name $ ConT ''MSem
+            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'MSem.new) uv) []
+            ]
+
+-- | Declaring unique 'MSemN's.
+--
+-- The initial value; which is, in this case, determines the initial quantity
+-- of the semaphore; is passed to 'newMSemN'; the types thus must match.  The
+-- internal type is ignored.
+--
+-- NB: When multiple units of a resource are needed simultaneously, consider using 'MSemN's to avoid deadlocks.
+--
+-- These preconditions apply to GHC 7.0.4 and base-0.4.3.1 and likely similar versions and implementations as well.
+--
+-- In its low-level implementation, this instance uses 'unsafePerformIO';
+-- thus, the same caveats apply to this instance, particularly those
+-- regarding top-level declarations (referential transparency cannot be
+-- violated here).  As of base-4.3.1.0, these conditions, that the user needs
+-- to be aware of, are the following:
+--  * Compile the declarations with the compiler flag -fno-cse.  This
+--    prevents multiple references from being substituted to refer to the
+--    same data.  This flag thus does not affect the semantics of the
+--    program, but may potentially adversely affect its performance; thus,
+--    isolating in a @.Global@ module may be advisable in some cases.  This
+--    condition is not strictly necessary when only one declaration is made
+--    in a module, since the compiler cannot substitute multiple references
+--    to refer to same data.
+--
+--    If your code behaves differently when optimizations are enabled,
+--    ensure that this flag is indeed being used when the declarations are being compiled.
+--    Setting or passing this flag is NOT handled automatically by this
+--    implementation; it is the responsibility of users of this
+--    implementation to ensure that such appropriate behaviour is set when
+--    necessary.
+--
+--    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
+--    the file in which the declarations are declared, before the "module"
+--    line.
+instance (Integral i) => UniqueDeclaration (Const (MSemN i)) where
+    (Tagged name) =:: (uvq, _) = do
+        uv  <- uvq
+        return $
+            [ SigD name $ ConT ''MSemN
+            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'MSemN.new) uv) []
             ]
 
 -- | Identity type wrapper that indicates that the unique declaration should be "empty" by default.
