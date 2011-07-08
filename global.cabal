@@ -7,11 +7,10 @@ license-file:        LICENSE
 copyright:           Copyright (C) 2011 Byron James Johnson
 author:              Byron James Johnson
 maintainer:          KrabbyKrap@gmail.com
-synopsis:            Haskell2010 compatible library enabling unique top-level declarations, including references to mutable state accessible via IO.
+synopsis:            Haskell2010 compatible library enabling unique top-level declarations
 description:
-  The "global" library enables the declaration of unique top-level references
-  to state.  More generally, it enables the declaration of unique top-level
-  declarations.
+  The "global" library enables the declaration of unique top-level
+  declarations, including references to mutable state accessible via IO.
   .
   Conceptually, this library defines primitive means of unique declarations,
   whose internal implementation is hidden from users, and uses Template
