@@ -544,7 +544,8 @@ instance UniqueDeclaration (UDEmpty MSampleVar) where
 --
 -- The initial value; which is, in this case, determines the initial quantity
 -- of the semaphore; is passed to 'newMSem'; the types thus must match.  The
--- internal type is ignored.
+-- internal type is given to the 'MSem' constructor to construct a semaphore
+-- based on an integral type.
 --
 -- NB: When multiple units of a resource are needed simultaneously, consider using 'MSemN's to avoid deadlocks.
 --
@@ -574,11 +575,12 @@ instance UniqueDeclaration (UDEmpty MSampleVar) where
 --    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
 --    the file in which the declarations are declared, before the "module"
 --    line.
-instance (Integral i) => UniqueDeclaration (Const (MSem i)) where
-    (Tagged name) =:: (uvq, _) = do
+instance UniqueDeclaration MSem where
+    (Tagged name) =:: (uvq, Tagged typq) = do
         uv  <- uvq
+        typ <- typq
         return $
-            [ SigD name $ ConT ''MSem
+            [ SigD name $ AppT (ConT ''MSem) typ
             , PragmaD (InlineP name (InlineSpec False False Nothing))
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'MSem.new) uv) []
             ]
@@ -587,7 +589,8 @@ instance (Integral i) => UniqueDeclaration (Const (MSem i)) where
 --
 -- The initial value; which is, in this case, determines the initial quantity
 -- of the semaphore; is passed to 'newMSemN'; the types thus must match.  The
--- internal type is ignored.
+-- internal type is given to the 'MSemN' constructor to construct a semaphore
+-- based on an integral type.
 --
 -- NB: When multiple units of a resource are needed simultaneously, consider using 'MSemN's to avoid deadlocks.
 --
@@ -617,11 +620,12 @@ instance (Integral i) => UniqueDeclaration (Const (MSem i)) where
 --    This can be accomplished by placing the line @{-# OPTIONS_GHC -fno-cse #-}@ in
 --    the file in which the declarations are declared, before the "module"
 --    line.
-instance (Integral i) => UniqueDeclaration (Const (MSemN i)) where
-    (Tagged name) =:: (uvq, _) = do
+instance UniqueDeclaration MSemN where
+    (Tagged name) =:: (uvq, Tagged typq) = do
         uv  <- uvq
+        typ <- typq
         return $
-            [ SigD name $ ConT ''MSemN
+            [ SigD name $ AppT (ConT ''MSemN) typ
             , PragmaD (InlineP name (InlineSpec False False Nothing))
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'MSemN.new) uv) []
             ]
