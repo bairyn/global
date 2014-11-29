@@ -1,13 +1,16 @@
-name:                global
-version:             0.1.0.1
-cabal-version:       >= 1.10
-build-type:          Simple
-license:             BSD3
-license-file:        LICENSE
-copyright:           Copyright (C) 2011 Byron James Johnson
-author:              Byron James Johnson
-maintainer:          ByronJohnsonFP@gmail.com
-synopsis:            Haskell2010 compatible library enabling unique top-level declarations
+name:          global
+-- Don't forget to bump the tag too.
+version:       0.1.0.1
+cabal-version: >= 1.10
+build-type:    Simple
+license:       BSD3
+license-file:  LICENSE
+copyright:     Copyright (C) 2011 Byron James Johnson
+author:        Byron James Johnson
+maintainer:    ByronJohnsonFP@gmail.com
+synopsis:      Haskell2010 compatible library enabling unique top-level declarations
+category:      Data, Language, System
+tested-with:   GHC == 7.0.2
 description:
   The "global" library enables the declaration of unique top-level
   declarations, including references to mutable state accessible via IO.
@@ -35,9 +38,6 @@ description:
   Examples of small programs that use this library are provided in the
   repository in which it resides.
 
-category:              Data, Language, System
-tested-with:           GHC == 7.0.2
-
 library
   default-language:  Haskell2010
   hs-source-dirs:    src
@@ -55,10 +55,17 @@ library
   exposed-modules:
     Data.Global
   default-extensions:
-    TemplateHaskell
+    --,GADTs
+    ,TemplateHaskell
+    --,DeriveDataTypeable
   other-extensions:
     FlexibleInstances
 
 source-repository head
   type:              git
   location:          git@github.com:bairyn/global.git
+
+source-repository this
+  type:              git
+  location:          git@github.com:bairyn/global.git
+  tag:               v0.1.0.1
