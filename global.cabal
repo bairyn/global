@@ -10,7 +10,7 @@ author:        Byron James Johnson
 maintainer:    ByronJohnsonFP@gmail.com
 synopsis:      Haskell2010 compatible library enabling unique top-level declarations
 category:      Data, Language, System
-tested-with:   GHC == 7.8.2
+tested-with:   GHC == 7.8.3
 description:
   The "global" library enables the declaration of unique top-level
   declarations, including references to mutable state accessible via IO.
