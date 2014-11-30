@@ -1,5 +1,8 @@
 PLACEHOLDER
 -----
+* Revise synopsis, because "Haskell2010 compatible" suggests that both the
+  package and its dependencies don't require extensions, which is false.
+  Apologies for the misinformation!
 
 0.2.0.0
 -----

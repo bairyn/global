@@ -15,7 +15,7 @@ extra-source-files:
 extra-doc-files:
   README.md
  ,CHANGELOG.md
-synopsis:           Haskell2010 compatible library enabling unique top-level declarations
+synopsis:           Library enabling unique top-level declarations
 description:
   The "global" library enables the declaration of unique top-level
   declarations, including references to mutable state accessible via IO.
