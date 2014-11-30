@@ -9,6 +9,8 @@ copyright:          Copyright (C) 2011 Byron James Johnson
 author:             Byron James Johnson
 maintainer:         ByronJohnsonFP@gmail.com
 category:           Data, Language, System
+homepage:           https://github.com/bairyn/global
+bug-reports:        https://github.com/bairyn/global/issues
 tested-with:        GHC == 7.8.3
 extra-source-files:
 -- The extra-doc-files property requires cabal-version >= 1.18.
