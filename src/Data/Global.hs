@@ -9,7 +9,21 @@
 --
 -- TODO: The understandability of this library could be improved by writing
 -- something similar to an example of the output of Template Haskell in the
--- *documentation*.  Add this.
+-- 8documentation8.  Add this.  (SEE NEXT TODO before removing this TODO.)
+--
+-- TODO: ^^ Replacing the @8@s with @*@ (asterisks) in the above TODO breaks
+-- haddock -_-.  It fails with this:
+--
+-- @
+-- % cabal haddock
+-- Running Haddock for global-0.1.0.1...
+-- Preprocessing library global-0.1.0.1...
+-- Haddock coverage:
+--
+-- src/Data/Global.hs:13:1: parse error on input ‘module’
+-- @
+--
+-- At *least* file a bug report, please.
 module Data.Global
     ( UniqueDeclaration(..)
     , UDEmpty(..)
