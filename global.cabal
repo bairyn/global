@@ -1,5 +1,5 @@
 name:               global
--- Don't forget to bump the tag too.
+-- Don't forget to bump the tag and CHANGELOG placeholder too.
 version:            0.1.0.1
 cabal-version:      >= 1.18
 build-type:         Simple
