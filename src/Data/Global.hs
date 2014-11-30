@@ -1,5 +1,7 @@
 {-# LANGUAGE TemplateHaskell, FlexibleInstances #-}
 
+-- TODO: The DRY principle is violated in the instance declarations of
+-- 'UniqueDeclaration'.  Fix by writing an abstraction.
 module Data.Global
     ( UniqueDeclaration(..)
     , UDEmpty(..)
