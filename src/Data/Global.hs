@@ -146,7 +146,7 @@ instance UniqueDeclaration IORef where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''IORef) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newIORef) uv) []
             ]
 
@@ -186,7 +186,7 @@ instance UniqueDeclaration MVar where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''MVar) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newMVar) uv) []
             ]
 
@@ -225,7 +225,7 @@ instance UniqueDeclaration (UDEmpty MVar) where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''MVar) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'newEmptyMVar) []
             ]
 
@@ -264,7 +264,7 @@ instance UniqueDeclaration (UDEmpty Chan) where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''Chan) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'newChan) []
             ]
 
@@ -307,7 +307,7 @@ instance UniqueDeclaration (Const QSem) where
         uv  <- uvq
         return $
             [ SigD name $ ConT ''QSem
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newQSem) uv) []
             ]
 
@@ -350,7 +350,7 @@ instance UniqueDeclaration (Const QSemN) where
         uv  <- uvq
         return $
             [ SigD name $ ConT ''QSemN
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newQSemN) uv) []
             ]
 
@@ -390,7 +390,7 @@ instance UniqueDeclaration (Const RWLock) where
     (Tagged name) =:: (_, _) = do
         return $
             [ SigD name $ ConT ''RWLock
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'FairRWLock.new) []
             ]
 
@@ -430,7 +430,7 @@ instance UniqueDeclaration MSampleVar where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''MSampleVar) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'MSampleVar.newSV) uv) []
             ]
 
@@ -469,7 +469,7 @@ instance UniqueDeclaration (UDEmpty MSampleVar) where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''MSampleVar) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'MSampleVar.newEmptySV) []
             ]
 
@@ -514,7 +514,7 @@ instance UniqueDeclaration MSem where
         typ <- typq
         return $
             [ SigD name $ AppT (ConT ''MSem) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'MSem.new) uv) []
             ]
 
@@ -559,7 +559,7 @@ instance UniqueDeclaration MSemN where
         typ <- typq
         return $
             [ SigD name $ AppT (ConT ''MSemN) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'MSemN.new) uv) []
             ]
 
@@ -599,7 +599,7 @@ instance UniqueDeclaration TVar where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''TVar) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newTVarIO) uv) []
             ]
 
@@ -639,7 +639,7 @@ instance UniqueDeclaration TMVar where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''TMVar) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ AppE (VarE 'newTMVarIO) uv) []
             ]
 
@@ -678,7 +678,7 @@ instance UniqueDeclaration (UDEmpty TMVar) where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''TMVar) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'newEmptyTMVarIO) []
             ]
 
@@ -717,7 +717,7 @@ instance UniqueDeclaration (UDEmpty TChan) where
         typ <- typq
         $(assert [| monomorphic typ |]) . return $
             [ SigD name $ AppT (ConT ''TChan) typ
-            , PragmaD (InlineP name (InlineSpec False False Nothing))
+            , PragmaD (InlineP name NoInline FunLike AllPhases)
             , ValD (VarP name) (NormalB $ AppE (VarE 'unsafeUDeclInternal) $ VarE 'newTChanIO) []
             ]
 
