@@ -1,21 +1,21 @@
-name:          global
+name:               global
 -- Don't forget to bump the tag too.
-version:       0.1.0.1
-cabal-version: >= 1.18
-build-type:    Simple
-license:       BSD3
-license-file:  LICENSE
-copyright:     Copyright (C) 2011 Byron James Johnson
-author:        Byron James Johnson
-maintainer:    ByronJohnsonFP@gmail.com
-category:      Data, Language, System
-tested-with:   GHC == 7.8.3
+version:            0.1.0.1
+cabal-version:      >= 1.18
+build-type:         Simple
+license:            BSD3
+license-file:       LICENSE
+copyright:          Copyright (C) 2011 Byron James Johnson
+author:             Byron James Johnson
+maintainer:         ByronJohnsonFP@gmail.com
+category:           Data, Language, System
+tested-with:        GHC == 7.8.3
 extra-source-files:
 -- The extra-doc-files property requires cabal-version >= 1.18.
 extra-doc-files:
   README.md
  ,CHANGELOG.md
-synopsis:      Haskell2010 compatible library enabling unique top-level declarations
+synopsis:           Haskell2010 compatible library enabling unique top-level declarations
 description:
   The "global" library enables the declaration of unique top-level
   declarations, including references to mutable state accessible via IO.
@@ -67,10 +67,10 @@ library
     FlexibleInstances
 
 source-repository head
-  type:              git
-  location:          git@github.com:bairyn/global.git
+  type:     git
+  location: git@github.com:bairyn/global.git
 
 source-repository this
-  type:              git
-  location:          git@github.com:bairyn/global.git
-  tag:               v0.1.0.1
+  type:     git
+  location: git@github.com:bairyn/global.git
+  tag:      v0.1.0.1
