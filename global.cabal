@@ -64,7 +64,7 @@ library
   default-extensions:
     --,GADTs
     TemplateHaskell
-    --,DeriveDataTypeable
+    ,DeriveDataTypeable
   other-extensions:
     FlexibleInstances
 

@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell, DeriveDataTypeable, FlexibleInstances #-}
 
 -- TODO: The DRY principle is violated in the instance declarations of
 -- 'UniqueDeclaration'.  Fix by writing an abstraction.
@@ -53,6 +53,7 @@ import Control.Concurrent.QSemN
 import Control.Concurrent.STM.TVar
 import Control.Concurrent.STM.TMVar
 import Control.Concurrent.STM.TChan
+import Data.Data
 import Data.IORef
 import Data.Tagged
 import Debug.Trace.LocationTH
@@ -736,7 +737,8 @@ instance UniqueDeclaration (UDEmpty TChan) where
             ]
 
 -- | Identity type wrapper that indicates that the unique declaration should be "empty" by default.
-newtype UDEmpty u a = UDEmpty (u a)
+newtype UDEmpty u a = UDEmpty {unUDEmpty :: u a}
+  deriving (Eq, Ord, Show, Read, Data, Typeable)
 
 -- | Tagged name type.
 type UN u = Tagged (Cnt u) Name

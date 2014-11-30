@@ -1,5 +1,6 @@
 PLACEHOLDER
 -----
+* Add instances to `UDEmpty`.
 
 0.2.0.2
 -----
