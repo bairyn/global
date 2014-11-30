@@ -2,6 +2,14 @@
 
 -- TODO: The DRY principle is violated in the instance declarations of
 -- 'UniqueDeclaration'.  Fix by writing an abstraction.
+--
+-- TODO: The readability of the TH code here would be enhanced by writing in a
+-- comment something similar to an example of the output of Template Haskell.
+-- Add this.
+--
+-- TODO: The understandability of this library could be improved by writing
+-- something similar to an example of the output of Template Haskell in the
+-- *documentation*.  Add this.
 module Data.Global
     ( UniqueDeclaration(..)
     , UDEmpty(..)
