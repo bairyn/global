@@ -35,7 +35,7 @@ import Data.Tagged
 import Debug.Trace.LocationTH
 import qualified Language.Haskell.Exts.Syntax as Exts (Exp)
 import Language.Haskell.Exts.QQ
-import Language.Haskell.SyntaxTrees.ExtsToTH
+import Fork.Bairyn.Language.Haskell.SyntaxTrees.ExtsToTH
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import System.IO.Unsafe (unsafePerformIO)
