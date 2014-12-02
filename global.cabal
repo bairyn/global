@@ -1,6 +1,6 @@
 name:               global
 -- Don't forget to bump the tag and CHANGELOG placeholder too.
-version:            0.2.0.2
+version:            0.2.1.0
 cabal-version:      >= 1.18
 build-type:         Simple
 license:            BSD3
@@ -75,4 +75,4 @@ source-repository head
 source-repository this
   type:     git
   location: git@github.com:bairyn/global.git
-  tag:      v0.2.0.2
+  tag:      v0.2.1.0
